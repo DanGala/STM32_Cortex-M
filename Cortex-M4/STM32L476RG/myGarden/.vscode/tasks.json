@@ -22,18 +22,6 @@
                 "kind": "build",
                 "isDefault": true
             },
-        },
-        {
-            "label": "Rebuild",
-            "type": "shell",
-            "problemMatcher": {
-                "base": "$gcc",
-                "fileLocation": ["relative", "${workspaceRoot}/STM32"]
-            },
-            "command": "make.exe",
-            "options": {"cwd": "${workspaceFolder}/STM32"},
-            "dependsOn": ["Clean", "Build"],
-            "dependsOrder": "sequence",
         }
     ]
 }

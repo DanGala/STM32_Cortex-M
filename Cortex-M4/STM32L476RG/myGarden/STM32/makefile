@@ -12,8 +12,6 @@ PROJECT_NAME = STM32L476RG
 # Directory definition
 ST_LIB_DIR= STM32L4xx_HAL_Driver
 RTOS_SOURCE_DIR = ../FreeRTOS/Source
-COMMON_SOURCE_DIR = ../Common/Sources
-DRIVERS_SOURCE_DIR = Hardware
 
 # Directory for output files (lst, obj, dep, elf, sym, map, hex, bin etc.).
 OUTDIR = Debug/obj
@@ -43,12 +41,14 @@ BASE_FLAGS = -g2 \
 CFLAGS = $(BASE_FLAGS) -std=c11
 CPPFLAGS = $(BASE_FLAGS) -std=c++11
 
-INCLUDES = -I ../Common/Includes \
+INCLUDES = -I ../Common/Garden \
+		-I ../Common/Hardware \
    		-I ./BSP/STM32L4xx_Nucleo \
    		-I $(ST_LIB_DIR)/Inc \
    		-I ./CMSIS/Include \
    		-I ./CMSIS/Device/ST/STM32L4xx/Include \
-		-I $(DRIVERS_SOURCE_DIR) \
+		-I ./Hardware \
+		-I ./FreeRTOS \
 		-I $(RTOS_SOURCE_DIR)/include \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM_CM4F
 
@@ -58,8 +58,8 @@ LINKER_FLAGS = -T $(LINKER_SCRIPT) $(BASE_FLAGS) -o $(BINDIR)/$(PROJECT_NAME).he
 STARTUP = Hardware/startup_stm32l476xx.s
 
 # Source files
-CSOURCE = $(wildcard $(COMMON_SOURCE_DIR)/*.c)
-CSOURCE += $(wildcard $(DRIVERS_SOURCE_DIR)/*.c)
+CSOURCE = $(wildcard ../Common/**/*.c)
+CSOURCE += $(wildcard ./Hardware/*.c)
 		
 # ST Library source files.
 ST_LIB_SOURCE = $(wildcard $(ST_LIB_DIR)/Src/*.c)
@@ -74,8 +74,8 @@ CSOURCE+=$(ST_LIB_SOURCE)
 CSOURCE+=$(FREERTOS_SOURCE)
 CSOURCE+=$(STARTUP)
 
-CPPSOURCE = $(wildcard $(COMMON_SOURCE_DIR)/*.cpp)
-CPPSOURCE += $(wildcard $(DRIVERS_SOURCE_DIR)/*.cpp)
+CPPSOURCE = $(wildcard ../Common/**/*.cpp)
+CPPSOURCE += $(wildcard ./Hardware/*.cpp)
 
 # List of all source files without directory and file-extension.
 ALLSRCBASE = $(notdir $(basename $(CSOURCE)))
@@ -98,12 +98,13 @@ post-build: build
 build: $(BINDIR)/$(PROJECT_NAME).bin
 
 $(BINDIR)/$(PROJECT_NAME).bin : $(BINDIR)/$(PROJECT_NAME).hex
+	@echo ========== Objcopy ==========
 	$(OBJCOPY) $(BINDIR)/$(PROJECT_NAME).hex -O binary $(BINDIR)/$(PROJECT_NAME).bin
 	$(OBJCOPY) $(BINDIR)/$(PROJECT_NAME).hex -O elf32-littlearm $(BINDIR)/$(PROJECT_NAME).elf
 
 $(BINDIR)/$(PROJECT_NAME).hex : $(OBJS)
 	@echo ========== Linking ==========
-	@$(CXX) $(INCLUDES) $(LINKER_FLAGS) $(OBJS)
+	$(CXX) $(INCLUDES) $(LINKER_FLAGS) $(OBJS)
 
 # Compile: create object files from C source files.
 define COMPILE_C_TEMPLATE
