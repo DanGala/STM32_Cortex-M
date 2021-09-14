@@ -1,0 +1,39 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "make.exe clean",
+            "options": {"cwd": "${workspaceFolder}/STM32"}
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceRoot}/STM32"]
+            },
+            "command": "make.exe -j4 --output-sync=target",
+            "options": {"cwd": "${workspaceFolder}/STM32"},
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+        {
+            "label": "Rebuild",
+            "type": "shell",
+            "problemMatcher": {
+                "base": "$gcc",
+                "fileLocation": ["relative", "${workspaceRoot}/STM32"]
+            },
+            "command": "make.exe",
+            "options": {"cwd": "${workspaceFolder}/STM32"},
+            "dependsOn": ["Clean", "Build"],
+            "dependsOrder": "sequence",
+        }
+    ]
+}

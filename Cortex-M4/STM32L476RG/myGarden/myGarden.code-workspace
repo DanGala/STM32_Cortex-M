@@ -1,0 +1,63 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"C_Cpp.exclusionPolicy": "checkFilesAndFolders",
+		"cortex-debug.armToolchainPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.07/bin",
+		"cortex-debug.JLinkGDBServerPath": "C:/Program Files (x86)/SEGGER/JLink/JLinkGDBServer.exe",
+		"doxdocgen.cpp.tparamTemplate": "\\tparam {param} ",
+		"doxdocgen.generic.briefTemplate": "\\brief {text}",
+		"doxdocgen.generic.paramTemplate": "\\param {param} ",
+		"doxdocgen.generic.returnTemplate": "\\return {type} ",
+		"files.exclude": {
+			"**/*.d": true,
+			"**/*.o": true
+		},
+		"search.exclude": {
+			"**/obj/**": true
+		},
+		"files.associations": {
+			"main.h": "c"
+		}
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "STM32L476RG flash",
+				"request": "launch",
+				"type": "cortex-debug",
+				"servertype": "jlink",
+				"cwd": "${workspaceFolder}/STM32",
+				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32.elf",
+				"svdFile": "${workspaceFolder}/STM32/STM32F4x6.svd",
+				"device": "STM32L476RG",
+				"interface": "jtag"
+			},
+			{
+				"name": "STM32L476RG attach",
+				"request": "attach",
+				"type": "cortex-debug",
+				"servertype": "jlink",
+				"cwd": "${workspaceFolder}/STM32",
+				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32.elf",
+				"svdFile":  "${workspaceFolder}/STM32/STM32F4x6.svd",
+				"device": "STM32L476RG",
+				"interface": "jtag"
+			}
+		]
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"marus25.cortex-debug",
+			"cschlosser.doxdocgen",
+			"dan-c-underwood.arm",
+			"zixuanwang.linkerscript",
+			"actboy168.tasks"
+		]
+	}
+}
