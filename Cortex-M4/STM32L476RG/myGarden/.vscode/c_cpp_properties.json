@@ -3,8 +3,10 @@
         {
             "name": "STM32",
             "includePath": [
-                "${workspaceFolder}/Common/Includes/*",
+                "${workspaceFolder}/Common/Garden/*",
+                "${workspaceFolder}/Common/Hardware/*",
                 "${workspaceFolder}/STM32/Hardware/*",
+                "${workspaceFolder}/STM32/FreeRTOS/*",
                 "${workspaceFolder}/STM32/BSP/STM32L4xx_Nucleo/*",
                 "${workspaceFolder}/STM32/CMSIS/Include/*",
                 "${workspaceFolder}/STM32/CMSIS/Device/ST/STM32L4xx/Include/*",
