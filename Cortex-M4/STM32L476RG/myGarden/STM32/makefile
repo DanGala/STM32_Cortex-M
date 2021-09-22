@@ -41,7 +41,8 @@ BASE_FLAGS = -g2 \
 CFLAGS = $(BASE_FLAGS) -std=c11
 CPPFLAGS = $(BASE_FLAGS) -std=c++11
 
-INCLUDES = -I ../Common/Garden \
+INCLUDES = -I ../Configuration \
+		-I ../Common/Garden \
 		-I ../Common/Hardware \
    		-I ./BSP/STM32L4xx_Nucleo \
    		-I $(ST_LIB_DIR)/Inc \

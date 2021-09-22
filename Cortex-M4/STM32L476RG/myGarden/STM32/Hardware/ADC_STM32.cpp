@@ -1,9 +1,30 @@
-#include "ADC.h"
-#include "stm32l4xx_hal.h"
+#include "SystemHeaders.h"
 
 static GPIO_InitTypeDef GPIO_InitStruct;
 static ADC_HandleTypeDef hadc1;
-volatile uint32_t adcValue[1];
+volatile uint32_t convertedValues[ADC_CHANNEL_COUNT];
+volatile uint16_t lastConvertedIndex = 0;
+
+const uint32_t ADC_GPIO_PINS[ADC_CHANNEL_COUNT] =
+{
+	GPIO_PIN_0, //MOISTURE_SENSE_1
+	GPIO_PIN_1, //MOISTURE_SENSE_2
+	GPIO_PIN_4  //MOISTURE_SENSE_3
+};
+
+GPIO_TypeDef * ADC_GPIO_PORTS[ADC_CHANNEL_COUNT] =
+{
+	GPIOA, //MOISTURE_SENSE_1
+	GPIOA, //MOISTURE_SENSE_2
+	GPIOA  //MOISTURE_SENSE_3
+};
+
+const uint32_t ADC_CHANNEL_INPUTS[ADC_CHANNEL_COUNT] =
+{
+	ADC_CHANNEL_5, //MOISTURE_SENSE_1
+	ADC_CHANNEL_6, //MOISTURE_SENSE_2
+	ADC_CHANNEL_9  //MOISTURE_SENSE_3
+};
 
 /**
  * \brief Initializes the ADC peripheral
@@ -20,9 +41,12 @@ void ADConverter::InitializeHardware()
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG_ADC_CONTROL;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	GPIO_InitStruct.Pin = GPIO_PIN_0; //ADC channel ref input pin
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
+	for(uint16_t i = 0; i < ADC_CHANNEL_COUNT; i++)
+	{
+		GPIO_InitStruct.Pin = ADC_GPIO_PINS[i];
+		HAL_GPIO_Init(ADC_GPIO_PORTS[i], &GPIO_InitStruct);
+	}
+	
 	/* Configure the ADC peripheral */
 	hadc1.Instance = ADC1;
 	HAL_ADC_DeInit(&hadc1);
@@ -31,11 +55,11 @@ void ADConverter::InitializeHardware()
 	hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
 	hadc1.Init.Resolution = ADC_RESOLUTION_12B;
 	hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-	hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+	hadc1.Init.ScanConvMode = ADC_SCAN_ENABLE;
 	hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
 	hadc1.Init.LowPowerAutoWait = DISABLE;
-	hadc1.Init.ContinuousConvMode = ENABLE;
-	hadc1.Init.NbrOfConversion = 1;
+	hadc1.Init.ContinuousConvMode = DISABLE;
+	hadc1.Init.NbrOfConversion = ADC_CHANNEL_COUNT;
 	hadc1.Init.DiscontinuousConvMode = DISABLE;
 	hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
 	hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
@@ -44,19 +68,27 @@ void ADConverter::InitializeHardware()
 	hadc1.Init.OversamplingMode = DISABLE;
 	HAL_ADC_Init(&hadc1);
 
-	/* Configure ADC regular channel */
-	sConfig.Channel = ADC_CHANNEL_5;				  /* Sampled channel number */
-	sConfig.Rank = 1;								  /* Rank of sampled channel number ADCx_CHANNEL */
-	sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5; /* Sampling time (number of clock cycles unit) */
+	/* Configure ADC regular channels */
+	sConfig.Rank = 1;
+	sConfig.SamplingTime = ADC_SAMPLETIME_640CYCLES_5;
 	sConfig.SingleDiff = ADC_SINGLE_ENDED;
-	sConfig.Offset = 0; /* Parameter discarded because offset correction is disabled */
-	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+	sConfig.Offset = 0;
+	for(uint16_t i = 0; i < ADC_CHANNEL_COUNT; i++)
+	{
+		sConfig.Channel = ADC_CHANNEL_INPUTS[i];
+		HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+	}
 
 	/* Enable interrupts */
 	HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
+}
 
-	/* Start ADC */
+/**
+ * \brief Starts the ADC conversion sequence
+ */
+void ADConverter::Start()
+{
 	HAL_ADC_Start_IT(&hadc1);
 }
 
@@ -76,24 +108,25 @@ void ADConverter::Calibrate()
  * \brief Returns the raw number of ADC counts for an ADC channel conversion
  * \return Raw number of counts
  */
-uint32_t ADCChannel::GetRawValue()
+uint32_t ADCChannel::GetRaw()
 {
-	return adcValue[channel];
+	return convertedValues[index];
 }
 
 /**
  * \brief Returns the scaled converted value for an ADC channel
  * \return Scaled converted value
  */
-float ADCChannel::GetScaledValue()
+float ADCChannel::GetScaled()
 {
-	float scaled = (adcValue[channel] - offset) * scale;
+	float scaled = (convertedValues[index] - offset) * scale;
 	return scaled;
 }
 
 extern "C" void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	adcValue[0] = HAL_ADC_GetValue(hadc);
+	convertedValues[lastConvertedIndex] = HAL_ADC_GetValue(hadc);
+	lastConvertedIndex = (lastConvertedIndex + 1) % ADC_CHANNEL_COUNT;
 }
 
 extern "C" void ADC1_2_IRQHandler()

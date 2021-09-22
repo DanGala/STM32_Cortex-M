@@ -13,8 +13,8 @@
  * \brief Constructor
  * \param adcChannel ADC channel associated with this sensor
  */
-MoistureSensor::MoistureSensor(uint16_t adcChannel) :
-	adcChannel(adcChannel),
+MoistureSensor::MoistureSensor(uint16_t adcChannelIndex) :
+	adcChannelIndex(adcChannelIndex),
 	lastValue(std::numeric_limits<float>::quiet_NaN()),
 	overrideMoisture(0.0),
 	overrideEnabled(false)
@@ -33,7 +33,7 @@ float MoistureSensor::GetMoistureLevel()
 	}
 	else
 	{
-		return ADConverter::ReadScaled(adcChannel);
+		return ADConverter::AnalogRead(adcChannelIndex);
 	}
 }
 

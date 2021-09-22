@@ -3,6 +3,7 @@
         {
             "name": "STM32",
             "includePath": [
+                "${workspaceFolder}/Configuration/*",
                 "${workspaceFolder}/Common/Garden/*",
                 "${workspaceFolder}/Common/Hardware/*",
                 "${workspaceFolder}/STM32/Hardware/*",

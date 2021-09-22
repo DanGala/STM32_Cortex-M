@@ -1,19 +1,20 @@
-#ifndef __ADC_H
-#define __ADC_H
+#ifndef __ADC_H_
+#define __ADC_H_
 
-#include "FreeRTOS.h"
-#include "task.h"
+#include "SystemHeaders.h"
 
 #ifdef __cplusplus
 
 class ADCChannel
 {
 public:
-	ADCChannel(uint16_t channel, float scale, float offset);
-	uint32_t GetRawValue();
-	float GetScaledValue();
+	ADCChannel(const char * name, float scale, float offset);
+	uint32_t GetRaw();
+	float GetScaled();
 private:
-	uint16_t channel;
+	static uint16_t ctorCount;
+	uint16_t index;
+	const char * name;
 	float scale;
 	float offset;
 };
@@ -23,15 +24,18 @@ class ADConverter
 public:
 	ADConverter();
 	static void Initialize();
+	static float AnalogRead(uint16_t index);
+
 private:
 	static void AnalogTask(void *pvParams);
 	static void InitializeHardware();
+	static void Start();
 	static void Calibrate();
 	
 	static xTaskHandle analogTask_Handle;
-	static ADCChannel channels[1];
+	static ADCChannel channels[ADC_CHANNEL_COUNT];
 };
 
 #endif //#ifdef __cplusplus
 
-#endif //#ifndef __ADC_H
+#endif //#ifndef __ADC_H_

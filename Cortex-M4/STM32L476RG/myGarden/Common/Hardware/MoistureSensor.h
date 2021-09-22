@@ -6,12 +6,12 @@
 class MoistureSensor
 {
 public:
-	MoistureSensor(uint16_t adcChannel);
+	MoistureSensor(uint16_t adcChannelIndex);
 	float GetMoistureLevel();
 	void SetOverrideMoisture(float moisture, bool enabled);
 	
 private:
-	uint16_t adcChannel;
+	uint16_t adcChannelIndex;
 	float lastValue;
 	float overrideMoisture;
 	bool overrideEnabled;

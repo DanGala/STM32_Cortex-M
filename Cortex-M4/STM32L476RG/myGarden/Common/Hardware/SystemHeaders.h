@@ -1,6 +1,8 @@
 #ifndef __SYSTEM_HEADERS_H_
 #define __SYSTEM_HEADERS_H_
 
+/* Project configuration */
+#include "myGardenConfig.h"
 /* STM libraries includes */
 #include "stm32l4xx_hal.h"
 #include "stm32l4xx_nucleo.h"

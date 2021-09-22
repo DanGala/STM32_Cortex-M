@@ -1,11 +1,16 @@
-/* Includes ------------------------------------------------------------------*/
-#include "ADC.h"
-/* Scheduler includes */
-#include "task.h"
+/**
+ * @file ADC.cpp
+ * @author DGM
+ * @version 0.1
+ * @date 2021-09-22
+ * @copyright Copyright (c) 2021
+ */
 
+#include "SystemHeaders.h"
+
+uint16_t ADCChannel::ctorCount = 0;
 TaskHandle_t ADConverter::analogTask_Handle = nullptr;
-/* ADC channels definition */
-ADCChannel ADConverter::channels[1] = {ADCChannel(0, 1.0, 0.0)}; // test
+ADCChannel ADConverter::channels[ADC_CHANNEL_COUNT] = ADC_CHANNELS;
 
 /**
  * \brief Empty constructor
@@ -24,12 +29,18 @@ void ADConverter::Initialize()
 	xTaskCreate(AnalogTask, "ADCTask", 70, NULL, 0, &analogTask_Handle);
 }
 
+float ADConverter::AnalogRead(uint16_t index)
+{
+	return channels[index].GetScaled();
+}
+
 /**
  * \brief Construct a new ADCChannel::ADCChannel object
  * \param channel channel number
  */
-ADCChannel::ADCChannel(uint16_t channel, float scale, float offset) :
-	channel(channel),
+ADCChannel::ADCChannel(const char * name, float scale, float offset) :
+	index(ctorCount++),
+	name(name),
 	scale(scale),
 	offset(offset)
 {
@@ -42,16 +53,13 @@ ADCChannel::ADCChannel(uint16_t channel, float scale, float offset) :
 void ADConverter::AnalogTask(void * pvParams)
 {
 	TickType_t xLastWakeTime;
-	uint32_t value = 0;
 	xLastWakeTime = xTaskGetTickCount();
 
 	while(1)
 	{
-		/* Read converted value */
-		value = channels[0].GetScaledValue();
-		/* Do something useful with it */
-
-		/* Block for 50ms */
-		vTaskDelayUntil(&xLastWakeTime, (50 / portTICK_PERIOD_MS));
+		/* Trigger a new ADC scan */
+		Start();
+		/* Block for 10 ms */
+		vTaskDelayUntil(&xLastWakeTime, (10 / portTICK_PERIOD_MS));
 	}
 }
