@@ -7,6 +7,7 @@
 	"settings": {
 		"C_Cpp.exclusionPolicy": "checkFilesAndFolders",
 		"cortex-debug.armToolchainPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.07/bin",
+		"cortex-debug.stutilPath": "C:/Program Files (x86)/STLINK/bin/st-util.exe",
 		"cortex-debug.JLinkGDBServerPath": "C:/Program Files (x86)/SEGGER/JLink/JLinkGDBServer.exe",
 		"doxdocgen.cpp.tparamTemplate": "\\tparam {param} ",
 		"doxdocgen.generic.briefTemplate": "\\brief {text}",
@@ -30,10 +31,10 @@
 				"name": "STM32L476RG flash",
 				"request": "launch",
 				"type": "cortex-debug",
-				"servertype": "jlink",
+				"servertype": "stutil",
 				"cwd": "${workspaceFolder}/STM32",
-				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32.elf",
-				"svdFile": "${workspaceFolder}/STM32/STM32F4x6.svd",
+				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32L476RG.elf",
+				"svdFile": "${workspaceFolder}/STM32/STM32L4x6.svd",
 				"device": "STM32L476RG",
 				"interface": "jtag"
 			},
@@ -43,8 +44,8 @@
 				"type": "cortex-debug",
 				"servertype": "jlink",
 				"cwd": "${workspaceFolder}/STM32",
-				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32.elf",
-				"svdFile":  "${workspaceFolder}/STM32/STM32F4x6.svd",
+				"executable": "${workspaceFolder}/STM32/Debug/bin/STM32L476RG.elf",
+				"svdFile":  "${workspaceFolder}/STM32/STM32L4x6.svd",
 				"device": "STM32L476RG",
 				"interface": "jtag"
 			}

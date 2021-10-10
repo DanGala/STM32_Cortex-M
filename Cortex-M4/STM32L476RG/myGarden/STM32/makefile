@@ -27,19 +27,21 @@ OBJDUMP	= $(TOOLCHAIN_SOURCE_DIR)/arm-none-eabi-size
 # Compiler flags definition.
 BASE_FLAGS = -g2 \
 		-O0 \
-		-D STM32L476xx \
+		-DSTM32L476xx \
+		-MMD \
 		-mthumb \
 		-mcpu=cortex-m4 \
 		-ffunction-sections \
 		-fdata-sections \
+		-fno-exceptions \
+		-fno-strict-aliasing \
 		-mfpu=fpv4-sp-d16 \
 		-mfloat-abi=hard \
 		-fsingle-precision-constant \
-		-Wall \
-		--specs=nosys.specs
+		-Wall
 
-CFLAGS = $(BASE_FLAGS) -std=c11
-CPPFLAGS = $(BASE_FLAGS) -std=c++11
+CFLAGS = $(BASE_FLAGS) -std=gnu11
+CPPFLAGS = $(BASE_FLAGS) -std=gnu++11 -Wno-reorder
 
 INCLUDES = -I ../Configuration \
 		-I ../Common/Garden \
@@ -54,7 +56,7 @@ INCLUDES = -I ../Configuration \
 		-I $(RTOS_SOURCE_DIR)/portable/GCC/ARM_CM4F
 
 LINKER_SCRIPT = Hardware/STM32L476RGTx_FLASH.ld
-LINKER_FLAGS = -T $(LINKER_SCRIPT) $(BASE_FLAGS) -o $(BINDIR)/$(PROJECT_NAME).hex -Wl,--gc-sections,-Map=$(BINDIR)/$(PROJECT_NAME).map
+LINKER_FLAGS = -T $(LINKER_SCRIPT) $(BASE_FLAGS) -o $(BINDIR)/$(PROJECT_NAME).hex -Wl,--gc-sections,-Map=$(BINDIR)/$(PROJECT_NAME).map -lstdc++ --specs=nosys.specs
 
 STARTUP = Hardware/startup_stm32l476xx.s
 

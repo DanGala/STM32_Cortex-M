@@ -1,5 +1,8 @@
 
 *.o
+*.d
 Cortex-M4/STM32L476RG/myGarden/STM32/BSP/STM32L4xx_Nucleo/Release_Notes.html
 Cortex-M4/STM32L476RG/myGarden/STM32/BSP/STM32L4xx_Nucleo/STM32L4xx_Nucleo_BSP_User_Manual.chm
 Cortex-M4/STM32L476RG/myGarden/STM32/CMSIS/Device/ST/STM32L4xx/Release_Notes.html
+Cortex-M4/STM32L476RG/myGarden/.vscode/.cortex-debug.peripherals.state.json
+Cortex-M4/STM32L476RG/myGarden/.vscode/.cortex-debug.registers.state.json
