@@ -1,6 +1,7 @@
 #include "SystemHeaders.h"
 
 ADConverter adc;
+Garden myGarden;
 
 void SystemClock_Config(void);
 
@@ -17,29 +18,11 @@ int main(void)
 	/* Configure the system clock to 64 MHz */
 	SystemClock_Config();
 
-	/* Create some plants to be potted */
-	Plant cactus("Opuntia", 0.1);
-	Plant cheesePlant("Montsera Deliciosa", 0.6);
-	Plant sunflower("Helianthus annuus", 1.3);
-	/* Create a rotating plate for each pot */
-	RotatingPlate plate1(1.27, 0.3);
-	RotatingPlate plate2(2.7, 1.3);
-	RotatingPlate plate3(2.0, 0.7);
-	/* Create some irrigation pumps for the pots */
-	Pump pump1;
-	Pump pump2;
-	Pump pump3;
-	/* Create some sensors to measure soil moisture */
-	MoistureSensor sensor1(0);
-	MoistureSensor sensor2(1);
-	MoistureSensor sensor3(2);
-	/* Link all the objects into their respective pots */
-	Pot pot1(cactus, plate1, pump1, sensor1);
-	Pot pot2(cheesePlant, plate2, pump2, sensor2);
-	Pot pot3(sunflower, plate3, pump3, sensor3);
-
 	/* Configure the ADC peripheral */
 	ADConverter::Initialize();
+
+	/* Initialize business logic */
+	Garden::Initialize();
 
 	/* Start the scheduler - should never return */
 	vTaskStartScheduler();

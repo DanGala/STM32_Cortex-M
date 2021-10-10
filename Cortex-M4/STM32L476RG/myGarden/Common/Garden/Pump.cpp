@@ -9,32 +9,20 @@
 #include "SystemHeaders.h"
 #include "Pump.h"
 
+uint16_t Pump::ctorCount = 0;
+
 /**
  * \brief Constructor
  */
-Pump::Pump()
+Pump::Pump() :
+	index(ctorCount++)
 {
 }
 
 /**
- * \brief Pumps fluid continuosly
+ * \brief Initializes the pump hardware
  */
-void Pump::StartPumping()
+void Pump::Initialize()
 {
-	///TODO: Switch on the power to the pump driver
-}
-
-/**
- * \brief Stops any ongoing pumping
- */
-void Pump::StopPumping()
-{
-	if(pumping)
-	{
-		///TODO: Switch off the power to the pump driver
-	}
-	else
-	{
-		/* Do nothing */
-	}
+	InitializeHardware();
 }

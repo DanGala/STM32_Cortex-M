@@ -4,8 +4,8 @@
 class Plant
 {
 public:
-	Plant(const char * name, float moistureLimitLow);
-	Plant(const char * name, uint8_t health, float moistureLimitLow, bool waterNeeded);
+	Plant(const char * name, float maxMoisture);
+	Plant(const char * name, uint8_t health, float maxMoisture, bool waterNeeded);
 	void UpdateHealth(float moisture);
 	bool NeedsWatered();
 	
@@ -21,7 +21,7 @@ private:
 
 	const char * name; /**< String identifying the plant by name */
 	uint8_t health; /**< Health bar percentage (%) */
-	float moistureLimitLow; /**< Minimum volummetric water content in cm^3/cm^3 */
+	float maxMoisture; /**< Maximum volummetric water content in cm^3/cm^3 */
 	bool waterNeeded; /**< Flag to indicate when the soil is too dry for this plant's continued health */
 };
 

@@ -15,7 +15,6 @@
  */
 MoistureSensor::MoistureSensor(uint16_t adcChannelIndex) :
 	adcChannelIndex(adcChannelIndex),
-	lastValue(std::numeric_limits<float>::quiet_NaN()),
 	overrideMoisture(0.0),
 	overrideEnabled(false)
 {
@@ -33,7 +32,7 @@ float MoistureSensor::GetMoistureLevel()
 	}
 	else
 	{
-		return ADConverter::AnalogRead(adcChannelIndex);
+		return ADConverter::AnalogReadScaled(adcChannelIndex);
 	}
 }
 

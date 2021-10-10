@@ -10,6 +10,7 @@
 #include "Pot.h"
 
 Pot * Pot::pots = nullptr;
+TaskHandle_t Pot::rotationTask_Handle = nullptr;
 
 /**
  * \brief Constructor
@@ -40,6 +41,15 @@ Pot::Pot(Plant plant, RotatingPlate plate, Pump waterPump, MoistureSensor moistu
 		}
 		currentPot->nextPot = this;
 	}
+}
+
+/**
+ * \brief Initializer
+ */
+void Pot::Initialize()
+{
+	/* Create rotation task */
+	xTaskCreate(RotationTask, "RotationTask", 70, NULL, 2, &rotationTask_Handle);
 }
 
 /**
@@ -90,5 +100,48 @@ void Pot::RotateAll(uint16_t angle)
 	{
 		currentPot->Rotate(angle);
 		currentPot = currentPot->nextPot;
+	}
+}
+
+/**
+ * \brief Updates the health of this pot's plant
+ */
+void Pot::UpdatePlantHealth()
+{
+	plant.UpdateHealth(moistureSense.GetMoistureLevel());
+}
+
+/**
+ * \brief Updates the health of all plants in all pots
+ */
+void Pot::UpdateHealthAll()
+{
+	Pot * currentPot = Pot::pots;
+	while (currentPot)
+	{
+		currentPot->UpdatePlantHealth();
+		currentPot = currentPot->nextPot;
+	}
+}
+
+/**
+ * \brief FreeRTOS task responsible for rotating all plates
+ * \param pvParams 
+ */
+void Pot::RotationTask(void * pvParams)
+{
+	TickType_t xLastWakeTime;
+	xLastWakeTime = xTaskGetTickCount();
+
+	while(1)
+	{
+		vTaskDelayUntil(&xLastWakeTime, (1 / portTICK_PERIOD_MS));
+
+		Pot * currentPot = Pot::pots;
+		while (currentPot)
+		{
+			currentPot->plate.LoopUpdate();
+			currentPot = currentPot->nextPot;
+		}
 	}
 }

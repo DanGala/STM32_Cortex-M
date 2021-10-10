@@ -12,7 +12,6 @@ public:
 	
 private:
 	uint16_t adcChannelIndex;
-	float lastValue;
 	float overrideMoisture;
 	bool overrideEnabled;
 };

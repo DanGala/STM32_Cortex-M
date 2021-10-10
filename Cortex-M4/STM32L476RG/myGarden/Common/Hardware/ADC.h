@@ -24,7 +24,8 @@ class ADConverter
 public:
 	ADConverter();
 	static void Initialize();
-	static float AnalogRead(uint16_t index);
+	static float AnalogReadScaled(uint16_t index);
+	static uint32_t AnalogReadRaw(uint16_t index);
 
 private:
 	static void AnalogTask(void *pvParams);

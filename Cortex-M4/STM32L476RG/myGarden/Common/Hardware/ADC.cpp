@@ -29,9 +29,14 @@ void ADConverter::Initialize()
 	xTaskCreate(AnalogTask, "ADCTask", 70, NULL, 0, &analogTask_Handle);
 }
 
-float ADConverter::AnalogRead(uint16_t index)
+float ADConverter::AnalogReadScaled(uint16_t index)
 {
 	return channels[index].GetScaled();
+}
+
+uint32_t ADConverter::AnalogReadRaw(uint16_t index)
+{
+	return channels[index].GetRaw();
 }
 
 /**

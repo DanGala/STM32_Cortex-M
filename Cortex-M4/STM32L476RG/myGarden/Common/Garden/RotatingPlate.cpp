@@ -65,7 +65,10 @@ void RotatingPlate::LoopUpdate()
 	float diffPos = diffGain * deltaE * UPDATE_FREQ;
 	float controlVar = pPos + diffPos;
 
-	///TODO: implement motor control
 	Motor(controlVar);
+}
 
+void RotatingPlate::Motor(float control)
+{
+	///TODO: implement motor control
 }

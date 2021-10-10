@@ -10,12 +10,14 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits>
+
 /* Scheduler includes */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
 #include "queue.h"
 /* Business Logic includes */
+#include "Garden.h"
 #include "Pot.h"
 #include "Plant.h"
 #include "Pump.h"
