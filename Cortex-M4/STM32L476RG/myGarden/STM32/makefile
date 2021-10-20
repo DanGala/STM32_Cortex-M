@@ -9,6 +9,8 @@
 # Project name
 PROJECT_NAME = STM32L476RG
 
+SHELL = CMD
+
 # Directory definition
 ST_LIB_DIR= STM32L4xx_HAL_Driver
 RTOS_SOURCE_DIR = ../FreeRTOS/Source
@@ -89,8 +91,7 @@ OBJS = $(addprefix $(OUTDIR)/, $(addsuffix .o, $(ALLSRCBASE)))
 
 # Rules definition. ***********************************************************
 
-# Add .d to Make's recognized suffixes.
-SUFFIXES += .d
+.PHONY: all clean
 
 all: post-build
 
@@ -129,3 +130,6 @@ clean:
 	@echo ======== Cleaning up ========
 	@del Debug\obj\* /S /Q
 	@del Debug\bin\* /S /Q
+
+#Create depencies on included files etc.
+-include $(OBJS:%.o=%.d)
