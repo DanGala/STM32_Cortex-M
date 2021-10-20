@@ -22,7 +22,7 @@ MoistureSensor::MoistureSensor(uint16_t adcChannelIndex) :
 
 /**
  * \brief Returns the latest moisture level recorded
- * \return Moisture level in cm^3/cm^3 
+ * \return Moisture level in %
  */
 float MoistureSensor::GetMoistureLevel()
 {

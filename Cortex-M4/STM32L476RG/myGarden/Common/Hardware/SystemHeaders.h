@@ -10,20 +10,17 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <limits>
-
+#include <assert.h>
 /* Scheduler includes */
 #include "FreeRTOS.h"
 #include "task.h"
 #include "semphr.h"
 #include "queue.h"
-/* Business Logic includes */
-#include "Garden.h"
-#include "Pot.h"
-#include "Plant.h"
-#include "Pump.h"
-#include "RotatingPlate.h"
 /* Hardware includes */
 #include "ADC.h"
 #include "MoistureSensor.h"
+#ifdef USE_INCREMENTAL_ENCODER
+#include "IncrementalEncoder.h"
+#endif //#ifdef USE_INCREMENTAL_ENCODER
 
 #endif //#ifndef __SYSTEM_HEADERS_H_

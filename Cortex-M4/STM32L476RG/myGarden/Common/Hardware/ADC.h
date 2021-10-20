@@ -1,8 +1,6 @@
 #ifndef __ADC_H_
 #define __ADC_H_
 
-#include "SystemHeaders.h"
-
 #ifdef __cplusplus
 
 class ADCChannel

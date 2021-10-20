@@ -7,6 +7,7 @@
  */
 
 #include "SystemHeaders.h"
+#include "Garden.h"
 
 TaskHandle_t Garden::monitoringTask_Handle = nullptr;
 Pot Garden::gardenPots[POT_COUNT] = POTS_INIT;
@@ -32,11 +33,11 @@ void Garden::MonitoringTask(void * pvParams)
 {
 	TickType_t xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
-	uint32_t rotatePeriodCounterSecs = 0;
+	uint32_t rotatePeriodCounter = 0;
 
 	while(1)
 	{
-		vTaskDelayUntil(&xLastWakeTime, (1000 / portTICK_PERIOD_MS));
+		vTaskDelayUntil(&xLastWakeTime, (UPDATE_PERIOD_MS / portTICK_PERIOD_MS));
 		
 		/* Update health status for all pots */
 		Pot::UpdateHealthAll();
@@ -45,10 +46,10 @@ void Garden::MonitoringTask(void * pvParams)
 		Pot::WaterAll();
 
 		/* Rotate all pots a bit every now and then */
-		if(rotatePeriodCounterSecs++ == ROTATING_PERIOD_SECS)
+		if(rotatePeriodCounter++ == (DAY_TO_MS / UPDATE_PERIOD_MS))
 		{
-			Pot::RotateAll(DEFAULT_ROTATION_ANGLE);
-			rotatePeriodCounterSecs = 0;
+			Pot::RotateAll(ROTATION_PER_DAY);
+			rotatePeriodCounter = 0;
 		}
 
 	}

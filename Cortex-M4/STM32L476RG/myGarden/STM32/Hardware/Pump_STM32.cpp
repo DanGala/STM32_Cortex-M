@@ -1,6 +1,5 @@
 #include "SystemHeaders.h"
-
-static GPIO_InitTypeDef GPIO_InitStruct;
+#include "Pump.h"
 
 const uint32_t PUMP_GPIO_PINS[ADC_CHANNEL_COUNT] =
 {
@@ -21,6 +20,8 @@ GPIO_TypeDef * PUMP_GPIO_PORTS[ADC_CHANNEL_COUNT] =
  */
 void Pump::InitializeHardware()
 {
+	GPIO_InitTypeDef GPIO_InitStruct;
+
 	/* Enable clocks */
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	__HAL_RCC_GPIOB_CLK_ENABLE();

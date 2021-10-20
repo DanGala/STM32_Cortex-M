@@ -24,11 +24,11 @@ RotatingPlate::RotatingPlate(float Kp, float Kd) :
 
 /**
  * \brief Sets the reference position of the PD loop
- * \param angle Angular position in tens of degrees
+ * \param angle Angular position in tenths of degrees
  */
 void RotatingPlate::Rotate(uint16_t angle)
 {
-	target = (position + angle) % ANGLE_WRAP_AROUND;
+	target = (position + angle) % angleUnitsPerRev;
 }
 
 /**
@@ -36,39 +36,39 @@ void RotatingPlate::Rotate(uint16_t angle)
  */
 void RotatingPlate::LoopUpdate()
 {
-	///TODO: position to be updated by timer interrupt in encoder interface mode
-	uint16_t actualPos = position;
-	uint16_t targetPos = target;
-	uint16_t error;
+#ifdef USE_INCREMENTAL_ENCODER
+	position = IncrementalEncoder::GetPosition();
+#endif
 
-	if(targetPos < actualPos)
-	{
-		error = targetPos + ANGLE_WRAP_AROUND - actualPos;
-	}
-	else
-	{
-		error = targetPos - actualPos;
-	}
+	int32_t actualPos = position;
+	int32_t targetPos = target;
+	int32_t error;
 
+	/* Estimate position error considering angle wrapping */
+	error = targetPos - actualPos;
+
+	/* Calculate proportional gain component */
 	float pPos = propGain * error;
-	uint16_t deltaE;
-	if(error < prevError)
-	{
-		deltaE = prevError - error;
-	}
-	else
-	{
-		deltaE = prevError + ANGLE_WRAP_AROUND - error;
-	}
+
+	/* Calculate differential gain component */
+	int32_t deltaE = prevError - error;
+	float diffPos = diffGain * deltaE * updateFrequency;
+
+	/* Record the new error for the next update */
 	prevError = error;
 
-	float diffPos = diffGain * deltaE * UPDATE_FREQ;
+	/* Calculate the PD controller loop output */
 	float controlVar = pPos + diffPos;
 
+	/* Feed the calculated control signal to the motor driver */
 	Motor(controlVar);
 }
 
 void RotatingPlate::Motor(float control)
 {
 	///TODO: implement motor control
+
+#ifndef USE_INCREMENTAL_ENCODER
+	//If using open loop control, update position after motoring
+#endif
 }

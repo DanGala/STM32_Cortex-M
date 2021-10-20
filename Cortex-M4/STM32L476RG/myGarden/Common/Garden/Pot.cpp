@@ -69,7 +69,7 @@ void Pot::Water()
 
 /**
  * \brief Rotates the pot clockwise by the angle specified
- * \param angle Angular rotation desired in tens of degrees
+ * \param angle Angular rotation desired in tenths of degrees
  */
 void Pot::Rotate(uint16_t angle)
 {
@@ -91,7 +91,7 @@ void Pot::WaterAll()
 
 /**
  * \brief Rotates all pots clockwise by the same angle
- * \param angle Angular rotation desired in tens of degrees
+ * \param angle Angular rotation desired in tenths of degrees
  */
 void Pot::RotateAll(uint16_t angle)
 {

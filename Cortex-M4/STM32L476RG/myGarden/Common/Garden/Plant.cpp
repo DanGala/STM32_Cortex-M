@@ -11,22 +11,25 @@
 
 /**
  * \brief Constructor
- * \param moistureLimitLow Minimum soil moisture level required by the plant in cm^3/cm^3
+ * \param name String used to identify this plant
+ * \param minMoisture Minimum soil moisture level required by the plant in %
  */
-Plant::Plant(const char * name, float maxMoisture) :
-	Plant(name, 100, maxMoisture, false)
+Plant::Plant(const char * name, float minMoisture) :
+	Plant(name, 100, minMoisture, false)
 {
 }
 
 /**
  * \brief Specialized constructor
+ * \param name String used to identify this plant
  * \param health Initial health of the plant in %
- * \param moistureLimitLow Minimum soil moisture level required by the plant in cm^3/cm^3
+ * \param minMoisture Minimum soil moisture level required by the plant in cm^3/cm^3
+ * \param waterNeeded Flag to indicate whether watering is required
  */
-Plant::Plant(const char * name, uint8_t health, float maxMoisture, bool waterNeeded) :
+Plant::Plant(const char * name, uint8_t health, float minMoisture, bool waterNeeded) :
 	name(name),
 	health(health),
-	maxMoisture(maxMoisture),
+	minMoisture(minMoisture),
 	waterNeeded(waterNeeded)
 {
 }
@@ -38,8 +41,9 @@ Plant::Plant(const char * name, uint8_t health, float maxMoisture, bool waterNee
 void Plant::UpdateHealth(float moisture)
 {
 	/* Update health bar */
-	if(moisture > maxMoisture)
+	if(moisture < minMoisture)
 	{
+		/* Soil was too dry - decrease health bar */
 		if(health >= MOISTURE_BELOW_LIMIT_PENALTY)
 		{
 			health -= MOISTURE_BELOW_LIMIT_PENALTY;
@@ -51,6 +55,7 @@ void Plant::UpdateHealth(float moisture)
 	}
 	else
 	{
+		/* Soil humidity was OK - increase health bar */
 		if((health + MOISTURE_OK_RECOVERY) > FULL_HEALTH)
 		{
 			health = FULL_HEALTH;

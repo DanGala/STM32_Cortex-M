@@ -9,16 +9,14 @@ public:
 	void LoopUpdate();
 	
 private:
- 	/** Maximum angle value in tens of degrees before wrapping */
-	static constexpr uint16_t ANGLE_WRAP_AROUND = 3600u;
-	/** Control loop update frequency in kHz - must match the frequency of the routine calling LoopUpdate() */
-	static constexpr float UPDATE_FREQ = 1;
+	static constexpr uint16_t angleUnitsPerRev = 3600u; /**< Maximum angle value in tenths of degrees before wrapping */
+	static constexpr float updateFrequency = 1; /**< Control loop update frequency in kHz - must match the frequency of the routine calling LoopUpdate() */
 
 	void Motor(float control);
 
-	uint16_t position; /**< Current angular position in tens of degrees */
-	uint16_t target; /**< Target angular position in tens of degrees */
-	uint16_t prevError; /**< Previous loop update error */
+	uint16_t position; /**< Current angular position in tenths of degrees */
+	uint16_t target; /**< Target angular position in tenths of degrees */
+	int32_t prevError; /**< Previous loop update error */
 	float propGain; /**< Proportional gain value for the PI loop */
 	float diffGain; /**< Integral gain value for the PI loop */
 };

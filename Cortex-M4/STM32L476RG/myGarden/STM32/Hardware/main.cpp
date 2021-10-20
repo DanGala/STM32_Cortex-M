@@ -1,4 +1,5 @@
 #include "SystemHeaders.h"
+#include "Garden.h"
 
 ADConverter adc;
 Garden myGarden;
