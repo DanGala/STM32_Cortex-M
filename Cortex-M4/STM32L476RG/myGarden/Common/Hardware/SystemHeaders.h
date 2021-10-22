@@ -9,6 +9,8 @@
 /* Standard libraries includes */
 #include <stdlib.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include <limits>
 #include <assert.h>
 /* Scheduler includes */

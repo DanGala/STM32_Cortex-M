@@ -41,9 +41,10 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 /* Specify the memory areas */
 MEMORY
 {
-FLASH (rx)      : ORIGIN = 0x08000000, LENGTH = 1024K
-RAM (xrw)       : ORIGIN = 0x20000000, LENGTH = 96K
-SRAM2 (xrw)     : ORIGIN = 0x10000000, LENGTH = 32K
+FLASH (rx)       : ORIGIN = 0x08000000, LENGTH = 1024K
+RAM (xrw)        : ORIGIN = 0x20000000, LENGTH = 96K
+ASSERTDATA (xrw) : ORIGIN = 0x10000000, LENGTH = 1K
+SRAM2 (xrw)      : ORIGIN = 0x10000400, LENGTH = 31K
 }
 
 /* Define output sections */
@@ -126,6 +127,18 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
 
+  .assert_data (NOLOAD):
+  {
+    . = ALIGN(4);
+    _sassert_data = .;        /* create a global symbol at assert_data start */
+    KEEP(*(.assert_data.FILE))
+    KEEP(*(.assert_data.FUNC))
+    KEEP(*(.assert_data.TEXT))
+    KEEP(*(.assert_data.LINE))
+    *(.assert_data*);
+    . = ALIGN(4);
+    _eassert_data = .;        /* define a global symbol at assert_data end */
+  } >ASSERTDATA
   
   /* Uninitialized data section */
   . = ALIGN(4);

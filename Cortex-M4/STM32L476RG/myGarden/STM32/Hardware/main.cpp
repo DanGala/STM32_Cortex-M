@@ -4,6 +4,13 @@
 ADConverter adc;
 Garden myGarden;
 
+/* Declaring protected assert variables */
+#define ASSERT_BUFFER_SIZE 100
+__attribute__((section(".assert_data.FILE"))) char assertFile[ASSERT_BUFFER_SIZE];
+__attribute__((section(".assert_data.FUNC"))) char assertFunc[ASSERT_BUFFER_SIZE];
+__attribute__((section(".assert_data.TEXT"))) char assertText[ASSERT_BUFFER_SIZE];
+__attribute__((section(".assert_data.LINE"))) int assertLine;
+
 void SystemClock_Config(void);
 
 /**
@@ -65,4 +72,24 @@ void SystemClock_Config(void)
 
 	/** Configure the main internal regulator output voltage */
 	HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+}
+
+extern "C" void assert_failed(uint8_t* file, uint32_t line)
+{
+	__assert_func((const char*)file, line, "_unknown", "HAL_assert");
+}
+
+extern "C" void __assert_func(const char * file, int line, const char * func, const char * text)
+{
+	/* Copy assert information into uninitialised data section */
+	strncpy(assertFile, const_cast<char *>(file), ASSERT_BUFFER_SIZE-1 );
+	assertFile[ASSERT_BUFFER_SIZE-1] = '\0';
+	strncpy(assertFunc, const_cast<char *>(func), ASSERT_BUFFER_SIZE-1 );
+	assertFunc[ASSERT_BUFFER_SIZE-1] = '\0';
+	strncpy(assertText, const_cast<char *>(text), ASSERT_BUFFER_SIZE-1 );
+	assertText[ASSERT_BUFFER_SIZE-1] = '\0';
+	assertLine = line;
+
+	//Trigger a software reset
+	NVIC_SystemReset();
 }
