@@ -24,5 +24,8 @@
 #ifdef USE_INCREMENTAL_ENCODER
 #include "IncrementalEncoder.h"
 #endif //#ifdef USE_INCREMENTAL_ENCODER
+#ifdef USE_BLDC_MOTOR
+#include "BLDC_Motor.h"
+#endif //#ifdef USE_BLDC_MOTOR
 
 #endif //#ifndef __SYSTEM_HEADERS_H_

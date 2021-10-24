@@ -1,3 +1,11 @@
+/**
+ * @file IncrementalEncoder_STM32.cpp
+ * @author DGM
+ * @version 0.1
+ * @date 2021-10-21
+ * @copyright Copyright (c) 2021
+ */
+
 #include "SystemHeaders.h"
 
 #ifdef USE_INCREMENTAL_ENCODER
@@ -26,8 +34,8 @@ void IncrementalEncoder::InitializeHardware()
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 	/* Configure timer inputs as encoder interface */
-	__HAL_RCC_TIM1_CLK_ENABLE();
-	htim.Instance               = TIM1;
+	__HAL_RCC_TIM3_CLK_ENABLE();
+	htim.Instance               = TIM3;
 	htim.Init.Period            = 0xFFFF;
 	htim.Init.Prescaler         = 0;
 	htim.Init.ClockDivision     = 0;
@@ -48,9 +56,9 @@ void IncrementalEncoder::InitializeHardware()
 	/* Start the encoder interface */
 	HAL_TIM_Encoder_Start_IT(&htim, TIM_CHANNEL_ALL);
 
-	/* Enable the interrupt for TIM1 */
-	HAL_NVIC_SetPriority(TIM1_CC_IRQn, 1, 0);
-	HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
+	/* Enable the interrupt for TIM3 */
+	HAL_NVIC_SetPriority(TIM3_IRQn, 3, 0);
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 
 	/* Encoder initial state */
 	rotatoryState = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3) << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
@@ -75,7 +83,7 @@ extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 	counts += encoderState[rotatoryTransition & 0x0F];
 }
 
-extern "C" void TIM1_IRQHandler(void)
+extern "C" void TIM3_IRQHandler(void)
 {
 	HAL_TIM_IRQHandler(&htim);
 }

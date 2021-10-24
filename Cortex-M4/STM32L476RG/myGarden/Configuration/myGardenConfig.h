@@ -23,3 +23,7 @@
 #define USE_INCREMENTAL_ENCODER
 
 #define ENCODER_CPR 500
+
+#define USE_BLDC_MOTOR
+
+#define MOTOR_UMAX 24.0
