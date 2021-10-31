@@ -5,6 +5,7 @@ class RotatingPlate
 {
 public:
 	RotatingPlate(float Kp, float Kd);
+	static void Initialize();
 	void Rotate(uint16_t angle);
 	void LoopUpdate();
 	
@@ -14,6 +15,13 @@ private:
 
 	void Motor(float control);
 
+#ifdef USE_BDC_MOTOR
+	BDC_Motor motor;
+#elif defined(USE_BLDC_MOTOR)
+	BLDC_Motor motor;
+#else
+	#error No motor support defined!
+#endif
 	uint16_t position; /**< Current angular position in tenths of degrees */
 	uint16_t target; /**< Target angular position in tenths of degrees */
 	int32_t prevError; /**< Previous loop update error */

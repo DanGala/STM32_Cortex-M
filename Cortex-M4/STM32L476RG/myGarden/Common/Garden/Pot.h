@@ -22,13 +22,14 @@ public:
 private:
 	static void RotationTask(void *pvParams);
 
-	Plant plant;
-	RotatingPlate plate;
-	Pump waterPump;
-	MoistureSensor moistureSense;
-	Pot * nextPot;
-	static Pot * pots;
-	static TaskHandle_t rotationTask_Handle;
+	Plant plant; /**< A plant (hopefully) growing in the pot */
+	RotatingPlate plate; /**< A rotating plate onto which the pot is placed */
+	Pump waterPump; /**< An irrigation pump whose outlet pumps water into the pot */
+	MoistureSensor moistureSense; /**< A soil moisture sensor placed inside the pot */
+	float soilMoisture; /**< Current soil moisture level */
+	Pot * nextPot; /**< Pointer to the next pot on the list */
+	static Pot * pots; /**< A singly-linked list of pots */
+	static TaskHandle_t rotationTask_Handle; /**< RTOS task handle for the RotationTask() */
 };
 
 #endif //#ifndef __POT_H_

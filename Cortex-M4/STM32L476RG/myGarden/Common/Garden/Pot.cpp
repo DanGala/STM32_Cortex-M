@@ -14,7 +14,7 @@ TaskHandle_t Pot::rotationTask_Handle = nullptr;
 
 /**
  * \brief Constructor
- * \param plant Plant planted on this pot
+ * \param plant Plant planted in this pot
  * \param plate RotatingPlate this pot is on
  * \param waterPump Pump used for irrigating this pot
  * \param moistureSense MoistureSensor used to measure soil moisture in this pot
@@ -24,6 +24,7 @@ Pot::Pot(Plant plant, RotatingPlate plate, Pump waterPump, MoistureSensor moistu
 	plate(plate),
 	waterPump(waterPump),
 	moistureSense(moistureSense),
+	soilMoisture(0.0),
 	nextPot(nullptr)
 {
 	if(!pots)
@@ -108,7 +109,8 @@ void Pot::RotateAll(uint16_t angle)
  */
 void Pot::UpdatePlantHealth()
 {
-	plant.UpdateHealth(moistureSense.GetMoistureLevel());
+	soilMoisture = moistureSense.GetMoistureLevel();
+	plant.UpdateHealth(soilMoisture);
 }
 
 /**
@@ -131,6 +133,17 @@ void Pot::UpdateHealthAll()
 void Pot::RotationTask(void * pvParams)
 {
 	TickType_t xLastWakeTime;
+
+#ifdef USE_BDC_MOTOR
+	BDC_Motor::Initialize();
+#else
+	BLDC_Motor::Initialize();
+#endif
+
+#ifdef USE_INCREMENTAL_ENCODER
+	IncrementalEncoder::Initialize();
+#endif
+
 	xLastWakeTime = xTaskGetTickCount();
 
 	while(1)

@@ -17,6 +17,7 @@
 RotatingPlate::RotatingPlate(float Kp, float Kd) :
 	position(0),
 	target(0),
+	prevError(0),
 	propGain(Kp),
 	diffGain(Kd)
 {
@@ -28,7 +29,7 @@ RotatingPlate::RotatingPlate(float Kp, float Kd) :
  */
 void RotatingPlate::Rotate(uint16_t angle)
 {
-	target = (position + angle) % angleUnitsPerRev;
+	target = (target + angle) % angleUnitsPerRev;
 }
 
 /**
@@ -42,10 +43,11 @@ void RotatingPlate::LoopUpdate()
 
 	int32_t actualPos = position;
 	int32_t targetPos = target;
-	int32_t error;
 
 	/* Estimate position error considering angle wrapping */
-	error = targetPos - actualPos;
+	int32_t error = targetPos - actualPos;
+	/* Only forwards for now */
+	if(error < 0) error += angleUnitsPerRev;
 
 	/* Calculate proportional gain component */
 	float pPos = propGain * error;
@@ -66,7 +68,9 @@ void RotatingPlate::LoopUpdate()
 
 void RotatingPlate::Motor(float control)
 {
-	///TODO: implement motor control
+	/* Limit the excitation signal */
+	float excitation = (control > 1.0) ? 1.0 : control;
+	motor.Drive(excitation);
 
 #ifndef USE_INCREMENTAL_ENCODER
 	//If using open loop control, update position after motoring
