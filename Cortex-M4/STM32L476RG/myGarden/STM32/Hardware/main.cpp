@@ -74,6 +74,19 @@ void SystemClock_Config(void)
 	HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
 }
 
+extern "C" uint32_t HAL_GetTick(void)
+{
+	//https://www.keil.com/pack/doc/CMSIS/Core/html/group__Core__Register__gr.html#ga2c32fc5c7f8f07fb3d436c6f6fe4e8c8
+	if(__get_IPSR() > 15)
+	{
+		return xTaskGetTickCountFromISR();
+	}
+	else
+	{
+		return xTaskGetTickCount();
+	}
+}
+
 extern "C" void assert_failed(uint8_t* file, uint32_t line)
 {
 	__assert_func((const char*)file, line, "_unknown", "HAL_assert");
@@ -92,4 +105,6 @@ extern "C" void __assert_func(const char * file, int line, const char * func, co
 
 	//Trigger a software reset
 	NVIC_SystemReset();
+
+	while(1);
 }
