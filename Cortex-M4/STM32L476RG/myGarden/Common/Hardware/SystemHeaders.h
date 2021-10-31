@@ -27,5 +27,8 @@
 #ifdef USE_BLDC_MOTOR
 #include "BLDC_Motor.h"
 #endif //#ifdef USE_BLDC_MOTOR
+#ifdef USE_BDC_MOTOR
+#include "BDC_Motor.h"
+#endif //#ifdef USE_BDC_MOTOR
 
 #endif //#ifndef __SYSTEM_HEADERS_H_

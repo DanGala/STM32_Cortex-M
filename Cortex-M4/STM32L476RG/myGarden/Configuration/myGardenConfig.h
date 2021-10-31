@@ -15,15 +15,17 @@
 #define ADC_CHANNEL_COUNT 3
 
 #define ADC_CHANNELS { \
-	ADCChannel(-78.90732, 3.21863), \
-	ADCChannel(1.0, 0.0), \
-	ADCChannel(1.0, 0.0) \
+	ADCChannel(-61.6598, 3.21863), \
+	ADCChannel(-61.6598, 3.21863), \
+	ADCChannel(-61.6598, 3.21863) \
 }
 
 #define USE_INCREMENTAL_ENCODER
 
-#define ENCODER_CPR 500
+#define ENCODER_CPR 12
 
-#define USE_BLDC_MOTOR
+#define MOTOR_UMAX 5
 
-#define MOTOR_UMAX 24.0
+#define GEAR_RATIO 298
+
+#define USE_BDC_MOTOR
