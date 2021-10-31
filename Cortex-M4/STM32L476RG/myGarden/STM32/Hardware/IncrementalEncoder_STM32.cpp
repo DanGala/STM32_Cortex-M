@@ -11,8 +11,8 @@
 #ifdef USE_INCREMENTAL_ENCODER
 
 static TIM_HandleTypeDef htim;
-static volatile uint8_t rotatoryState;
-static volatile uint8_t rotatoryTransition;
+static volatile uint8_t rotatoryState = 0;
+static volatile uint8_t rotatoryTransition = 0;
 static constexpr int8_t encoderState[16] = {0,-1,1,0,1,0,0,-1,-1,0,0,1,0,1,-1,0}; /**< Encoder state transition result */
 static volatile uint32_t counts = 0;
 
@@ -29,7 +29,7 @@ void IncrementalEncoder::InitializeHardware()
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-	GPIO_InitStruct.Pin = GPIO_PIN_3 | GPIO_PIN_5;
+	GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
 	GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
@@ -61,7 +61,7 @@ void IncrementalEncoder::InitializeHardware()
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 
 	/* Encoder initial state */
-	rotatoryState = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3) << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
+	rotatoryState = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
 	rotatoryTransition = (rotatoryTransition << 2) | rotatoryState;
 }
 
@@ -71,14 +71,15 @@ void IncrementalEncoder::InitializeHardware()
  */
 uint16_t IncrementalEncoder::GetPosition()
 {
-	static constexpr uint16_t countsPerRev = ENCODER_CPR;
-	static constexpr float countsToAngle = 3600.0f / countsPerRev;
-	return static_cast<uint16_t>(counts * countsToAngle);
+	static constexpr uint16_t countsPerRev = ENCODER_CPR * GEAR_RATIO;
+	static constexpr uint16_t angleUnitsPerRev = 3600;
+	static constexpr float countsToAngle = 1.0 * angleUnitsPerRev / countsPerRev;
+	return static_cast<uint16_t>((counts % angleUnitsPerRev) * countsToAngle);
 }
 
 extern "C" void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	rotatoryState = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3) << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_5);
+	rotatoryState = (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) << 1) | HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6);
 	rotatoryTransition = (rotatoryTransition << 2) | rotatoryState;
 	counts += encoderState[rotatoryTransition & 0x0F];
 }
