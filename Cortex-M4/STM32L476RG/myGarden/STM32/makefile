@@ -48,6 +48,7 @@ CPPFLAGS = $(BASE_FLAGS) -std=gnu++11 -Wno-reorder
 INCLUDES = -I ../Configuration \
 		-I ../Common/Garden \
 		-I ../Common/Hardware \
+		-I ../Common/HelperClasses \
    		-I ./BSP/STM32L4xx_Nucleo \
    		-I $(ST_LIB_DIR)/Inc \
    		-I ./CMSIS/Include \

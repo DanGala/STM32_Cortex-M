@@ -20,6 +20,7 @@
 #include "queue.h"
 /* Hardware includes */
 #include "ADC.h"
+#include "Serial.h"
 #include "MoistureSensor.h"
 #ifdef USE_INCREMENTAL_ENCODER
 #include "IncrementalEncoder.h"

@@ -6,6 +6,7 @@
                 "${workspaceFolder}/Configuration/*",
                 "${workspaceFolder}/Common/Garden/*",
                 "${workspaceFolder}/Common/Hardware/*",
+                "${workspaceFolder}/Common/HelperClasses/*",
                 "${workspaceFolder}/STM32/Hardware/*",
                 "${workspaceFolder}/STM32/FreeRTOS/*",
                 "${workspaceFolder}/STM32/BSP/STM32L4xx_Nucleo/*",
