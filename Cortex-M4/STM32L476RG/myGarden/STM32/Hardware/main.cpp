@@ -5,38 +5,13 @@ ADConverter adc;
 Garden myGarden;
 
 /* Declaring protected assert variables */
-#define ASSERT_BUFFER_SIZE 100
+static constexpr size_t ASSERT_BUFFER_SIZE = 100;
+static constexpr int ASSERT_CODE = 0x42;
 __attribute__((section(".assert_data.FILE"))) char assertFile[ASSERT_BUFFER_SIZE];
 __attribute__((section(".assert_data.FUNC"))) char assertFunc[ASSERT_BUFFER_SIZE];
 __attribute__((section(".assert_data.TEXT"))) char assertText[ASSERT_BUFFER_SIZE];
 __attribute__((section(".assert_data.LINE"))) int assertLine;
-
-void SystemClock_Config(void);
-
-/**
- * @brief  Main program
- * @param  None
- * @retval None
- */
-int main(void)
-{
-	/* Initialize HAL libraries */
-	HAL_Init();
-
-	/* Configure the system clock to 64 MHz */
-	SystemClock_Config();
-
-	/* Configure the ADC peripheral */
-	ADConverter::Initialize();
-
-	/* Initialize business logic */
-	Garden::Initialize();
-
-	/* Start the scheduler - should never return */
-	vTaskStartScheduler();
-
-	return 0;
-}
+__attribute__((section(".assert_data.CODE"))) int assertCode;
 
 /**
  * @brief System Clock Configuration
@@ -87,6 +62,78 @@ extern "C" uint32_t HAL_GetTick(void)
 	}
 }
 
+static constexpr uint8_t APP_VERSION_MAJOR = 0;
+static constexpr uint8_t APP_VERSION_MINOR = 1;
+/**
+ * \brief Prints details of the app name and current version over serial
+ */
+void PrintStartupInfo()
+{
+	char startupInfo[50];
+	sprintf(startupInfo, "\r\nmyGarden App v%d.%2d starting up!\r\n", APP_VERSION_MAJOR, APP_VERSION_MINOR);
+	Serial::SendToBuffer(startupInfo);
+	Serial::WriteBuffer();
+}
+
+/**
+ * \brief If the controller reset was caused by an assert, prints the details of the assert over serial
+ */
+void PrintAssertInfo()
+{
+	if(assertCode == ASSERT_CODE)
+	{
+		char assertInfo[230];
+		sprintf(assertInfo, "\r\nAssert at: %s:%d (\"%s\")\r\n", assertFile, assertLine, assertText);
+		Serial::SendToBuffer(assertInfo);
+		Serial::WriteBuffer();
+	}
+	else
+	{
+		assertLine = 0;
+		for(size_t i = 0; i < ASSERT_BUFFER_SIZE; i++)
+		{
+			assertFile[i] = 0;
+			assertFunc[i] = 0;
+			assertText[i] = 0;
+		}
+	}
+	assertCode = 0;
+}
+
+/**
+ * @brief  Main program
+ * @param  None
+ * @retval None
+ */
+int main(void)
+{
+	/* Initialize HAL libraries */
+	HAL_Init();
+
+	/* Configure the system clock to 64 MHz */
+	SystemClock_Config();
+
+	/* Initialize serial communications as soon as possible */
+	Serial::Initialize();
+
+	/* Print startup info */
+	PrintStartupInfo();
+
+	/* Print assert reset info */
+	PrintAssertInfo();
+
+	/* Configure the ADC peripheral */
+	ADConverter::Initialize();
+
+	/* Initialize business logic */
+	Garden::Initialize();
+
+	/* Start the scheduler - should never return */
+	vTaskStartScheduler();
+
+	return 0;
+}
+
 extern "C" void assert_failed(uint8_t* file, uint32_t line)
 {
 	__assert_func((const char*)file, line, "_unknown", "HAL_assert");
@@ -102,6 +149,7 @@ extern "C" void __assert_func(const char * file, int line, const char * func, co
 	strncpy(assertText, const_cast<char *>(text), ASSERT_BUFFER_SIZE-1 );
 	assertText[ASSERT_BUFFER_SIZE-1] = '\0';
 	assertLine = line;
+	assertCode = ASSERT_CODE;
 
 	//Trigger a software reset
 	NVIC_SystemReset();
