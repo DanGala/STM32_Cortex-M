@@ -1,14 +1,16 @@
 #ifndef __GARDEN_H_
 #define __GARDEN_H_
 
-#include "Pot.h"
+//Forward declarations
+class Pot;
+class GardenMonitor;
 
 class Garden
 {
 public:
 	Garden();
 	static void Initialize();
-	static void MonitoringTask(void *pvParams);
+	static void GardeningTask(void *pvParams);
 
 private:
 	static constexpr uint32_t HOURS_TO_MS = 3600000;
@@ -17,7 +19,8 @@ private:
 	static constexpr uint16_t ROTATION_PER_DAY = 450; // 1/8 rev per day
 
  	static Pot gardenPots[POT_COUNT];
-	static TaskHandle_t monitoringTask_Handle;
+	static GardenMonitor monitor;
+	static TaskHandle_t gardeningTask_Handle;
 };
 
 #endif //#ifndef __GARDEN_H_

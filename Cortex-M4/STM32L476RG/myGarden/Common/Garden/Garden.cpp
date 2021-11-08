@@ -8,28 +8,37 @@
 
 #include "SystemHeaders.h"
 #include "Garden.h"
+#include "Pot.h"
+#include "GardenMonitor.h"
 
-TaskHandle_t Garden::monitoringTask_Handle = nullptr;
+TaskHandle_t Garden::gardeningTask_Handle = nullptr;
 Pot Garden::gardenPots[POT_COUNT] = POTS_INIT;
 
+/**
+ * \brief Default c'tor
+ */
 Garden::Garden()
 {
 }
 
+/**
+ * \brief Initializer
+ */
 void Garden::Initialize()
 {
 	Pump::Initialize();
 	Pot::Initialize();
+	GardenMonitor::Initialize();
 
 	/* Create monitoring task */
-	xTaskCreate(MonitoringTask, "MonitoringTask", 70, NULL, 1, &monitoringTask_Handle);
+	xTaskCreate(GardeningTask, "GardeningTask", 70, NULL, 1, &gardeningTask_Handle);
 }
 
 /**
- * \brief FreeRTOS task responsible for processing values converted by the ADC peripheral
+ * \brief FreeRTOS task responsible for taking care of all plants
  * \param pvParams 
  */
-void Garden::MonitoringTask(void * pvParams)
+void Garden::GardeningTask(void * pvParams)
 {
 	TickType_t xLastWakeTime;
 	xLastWakeTime = xTaskGetTickCount();
